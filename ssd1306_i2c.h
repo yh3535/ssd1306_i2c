@@ -110,6 +110,6 @@ void ssd1306_i2c_area_write(ssd1306_i2c_inst *inst, ssd1306_i2c_area *area);
 void ssd1306_i2c_area_copyData(ssd1306_i2c_area *area, const uint8_t *data, uint size);
 void ssd1306_i2c_area_free(ssd1306_i2c_area *area);
 
-void general_byte_bit_copy(uint8_t *dest, uint d_start, uint8_t *src, uint s_start, uint length);
-void general_byte_bit_invert_copy(uint8_t *dest, uint d_start, uint8_t *src, uint s_start, uint length);
+void ssd1306_i2c_generalByteBitCopy(uint8_t *dest, uint d_start, uint8_t *src, uint s_start, uint length);
+void ssd1306_i2c_generalByteBitInvertCopy(uint8_t *dest, uint d_start, uint8_t *src, uint s_start, uint length);
 #endif

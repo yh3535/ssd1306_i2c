@@ -110,10 +110,10 @@ void sig_bufferWriteHanzi(sig_inst *inst, const char *hanzi, uint32_t x, uint32_
         {
             for (int i = 0; i < 16; i++)
             {
-                general_byte_bit_copy(&buf[page_y][x + i], mod_y, &data[i], 0, page_height - mod_y);
-                general_byte_bit_copy(&buf[page_y + 1][x + i], 0, &data[i], page_height - mod_y, mod_y);
-                general_byte_bit_copy(&buf[page_y + 1][x + i], mod_y, &data[i + 16], 0, page_height - mod_y);
-                general_byte_bit_copy(&buf[page_y + 2][x + i], 0, &data[i + 16], page_height - mod_y, mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y][x + i], mod_y, &data[i], 0, page_height - mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], 0, &data[i], page_height - mod_y, mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], mod_y, &data[i + 16], 0, page_height - mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 2][x + i], 0, &data[i + 16], page_height - mod_y, mod_y);
             }
         }
     }
@@ -127,7 +127,7 @@ void sig_bufferWriteHanzi(sig_inst *inst, const char *hanzi, uint32_t x, uint32_
             for (int i = 0; i < 12; i++)
             {
                 buf[page_y][x + i] = data[i];
-                general_byte_bit_copy(&buf[page_y + 1][x + i], 0, &data[i + 12], 0, 4);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], 0, &data[i + 12], 0, 4);
             }
         }
         else if (mod_y <= 4)
@@ -135,9 +135,9 @@ void sig_bufferWriteHanzi(sig_inst *inst, const char *hanzi, uint32_t x, uint32_
             // 此时只占用两个page
             for (int i = 0; i < 12; i++)
             {
-                general_byte_bit_copy(&buf[page_y][x + i], mod_y, &data[i], 0, page_height - mod_y);
-                general_byte_bit_copy(&buf[page_y + 1][x + i], 0, &data[i], page_height - mod_y, mod_y);
-                general_byte_bit_copy(&buf[page_y + 1][x + i], mod_y, &data[i + 12], 0, 4);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y][x + i], mod_y, &data[i], 0, page_height - mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], 0, &data[i], page_height - mod_y, mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], mod_y, &data[i + 12], 0, 4);
             }
         }
         else
@@ -145,10 +145,10 @@ void sig_bufferWriteHanzi(sig_inst *inst, const char *hanzi, uint32_t x, uint32_
             // 此时需要三个page
             for (int i = 0; i < 12; i++)
             {
-                general_byte_bit_copy(&buf[page_y][x + i], mod_y, &data[i], 0, page_height - mod_y);
-                general_byte_bit_copy(&buf[page_y + 1][x + i], 0, &data[i], page_height - mod_y, mod_y);
-                general_byte_bit_copy(&buf[page_y + 1][x + i], mod_y, &data[i + 12], 0, page_height - mod_y);
-                general_byte_bit_copy(&buf[page_y + 2][x + i], 0, &data[i + 12], page_height - mod_y, mod_y - 4);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y][x + i], mod_y, &data[i], 0, page_height - mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], 0, &data[i], page_height - mod_y, mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], mod_y, &data[i + 12], 0, page_height - mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 2][x + i], 0, &data[i + 12], page_height - mod_y, mod_y - 4);
             }
         }
     }
@@ -257,10 +257,10 @@ void sig_bufferWriteAscii(sig_inst *inst, const char *ascii, uint32_t x, uint32_
         {
             for (int i = 0; i < width; i++)
             {
-                general_byte_bit_copy(&buf[page_y][x + i], mod_y, &data[i], 0, page_height - mod_y);
-                general_byte_bit_copy(&buf[page_y + 1][x + i], 0, &data[i], page_height - mod_y, mod_y);
-                general_byte_bit_copy(&buf[page_y + 1][x + i], mod_y, &data[i + width], 0, page_height - mod_y);
-                general_byte_bit_copy(&buf[page_y + 2][x + i], 0, &data[i + width], page_height - mod_y, mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y][x + i], mod_y, &data[i], 0, page_height - mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], 0, &data[i], page_height - mod_y, mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], mod_y, &data[i + width], 0, page_height - mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 2][x + i], 0, &data[i + width], page_height - mod_y, mod_y);
             }
         }
     }
@@ -274,7 +274,7 @@ void sig_bufferWriteAscii(sig_inst *inst, const char *ascii, uint32_t x, uint32_
             for (int i = 0; i < width; i++)
             {
                 buf[page_y][x + i] = data[i];
-                general_byte_bit_copy(&buf[page_y + 1][x + i], 0, &data[i + width], 0, 4);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], 0, &data[i + width], 0, 4);
             }
         }
         else if (mod_y <= 4)
@@ -282,9 +282,9 @@ void sig_bufferWriteAscii(sig_inst *inst, const char *ascii, uint32_t x, uint32_
             // 此时只占用两个page
             for (int i = 0; i < width; i++)
             {
-                general_byte_bit_copy(&buf[page_y][x + i], mod_y, &data[i], 0, page_height - mod_y);
-                general_byte_bit_copy(&buf[page_y + 1][x + i], 0, &data[i], page_height - mod_y, mod_y);
-                general_byte_bit_copy(&buf[page_y + 1][x + i], mod_y, &data[i + width], 0, 4);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y][x + i], mod_y, &data[i], 0, page_height - mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], 0, &data[i], page_height - mod_y, mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], mod_y, &data[i + width], 0, 4);
             }
         }
         else
@@ -292,10 +292,10 @@ void sig_bufferWriteAscii(sig_inst *inst, const char *ascii, uint32_t x, uint32_
             // 此时需要三个page
             for (int i = 0; i < width; i++)
             {
-                general_byte_bit_copy(&buf[page_y][x + i], mod_y, &data[i], 0, page_height - mod_y);
-                general_byte_bit_copy(&buf[page_y + 1][x + i], 0, &data[i], page_height - mod_y, mod_y);
-                general_byte_bit_copy(&buf[page_y + 1][x + i], mod_y, &data[i + width], 0, page_height - mod_y);
-                general_byte_bit_copy(&buf[page_y + 2][x + i], 0, &data[i + width], page_height - mod_y, mod_y - 4);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y][x + i], mod_y, &data[i], 0, page_height - mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], 0, &data[i], page_height - mod_y, mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 1][x + i], mod_y, &data[i + width], 0, page_height - mod_y);
+                ssd1306_i2c_generalByteBitCopy(&buf[page_y + 2][x + i], 0, &data[i + width], page_height - mod_y, mod_y - 4);
             }
         }
     }
