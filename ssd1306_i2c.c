@@ -187,7 +187,7 @@ int ssd1306_i2c_getFontIndex(uint8_t ch)
 
 void ssd1306_i2c_bufferWriteChar(ssd1306_i2c_inst *inst, int16_t x, int16_t y, uint8_t ch)
 {
-    // TODO: Rewrite this function using the new general_byte_bit_copy.
+    // TODO: Rewrite this function using the new ssd1306_i2c_generalByteBitCopy.
     if (x > SSD1306_WIDTH - SSD1306_FONTS_WIDTH || y > SSD1306_HEIGHT - SSD1306_FONTS_HEIGHT)
         return;
     ssd1306_i2c_buf_t *buf = (ssd1306_i2c_buf_t *)(inst->buffer + 1);
@@ -263,7 +263,7 @@ void ssd1306_i2c_invertArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint
 {
     if(x_max >= SSD1306_WIDTH || y_max >= SSD1306_HEIGHT || x_min > x_max || y_min > y_max)
         return;
-    // TODO: Rewrite this function using the new general_byte_bit_copy or general_byte_bit_invert_copy.
+    // TODO: Rewrite this function using the new ssd1306_i2c_generalByteBitCopy or ssd1306_i2c_generalByteBitInvertCopy.
     ssd1306_i2c_buf_t *buf = (ssd1306_i2c_buf_t *)(inst->buffer + 1);
     uint y_ = y_min, x_ = x_min;
     if (y_min / 8 != y_max / 8)
