@@ -44,7 +44,8 @@ uint32_t    sig_getHanziAddressWord(sig_inst *inst, const char *hanzi);
 void        sig_getHanziData(sig_inst * inst, const char *hanzi, uint8_t * data);
 void        sig_bufferWriteHanzi(sig_inst *inst, const char *hanzi, uint32_t x, uint32_t y);
 void        sig_bufferWriteHString(sig_inst * inst, const char *str, size_t len, uint32_t x, uint32_t y);
-
-
-
+uint32_t    sig_getAsciiAddressWord(sig_inst *inst, const char *ascii);
+void        sig_getAsciiData(sig_inst *inst, const char *ascii, uint8_t *data);
+void        sig_bufferWriteAscii(sig_inst *inst, const char *ascii, uint32_t x, uint32_t y);
+void        sig_bufferWriteString(sig_inst *inst, const uint8_t *str, uint32_t x, uint32_t y);
 #endif /* _SSD1306_I2C_GT21L16S2Y_H_ */

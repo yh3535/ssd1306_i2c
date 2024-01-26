@@ -100,7 +100,9 @@ void ssd1306_i2c_bufferWriteCString(ssd1306_i2c_inst *inst, int16_t x, int16_t y
 void ssd1306_i2c_invert(ssd1306_i2c_inst *inst, bool inv);
 void ssd1306_i2c_invertArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint y_min, uint y_max);
 void ssd1306_i2c_invertPageArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint page_min, uint page_max);
-
+void ssd1306_i2c_bufferClear(ssd1306_i2c_inst *inst);
+void ssd1306_i2c_bufferClearArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint y_min, uint y_max);
+void ssd1306_i2c_bufferClearPageArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint page_min, uint page_max);
 
 
 int  ssd1306_i2c_area_init(ssd1306_i2c_area *area, int x_min, int x_max, int page_min, int page_max);

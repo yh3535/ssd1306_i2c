@@ -77,11 +77,15 @@ int main()
 
     sig_inst sig;
     uint8_t p[]={17,16,19,18};
-    sig_inst_init(&sig, &ssd1306, spi0, p,  GT21L16S2Y_FONT_1212, 5000);
-    sig_bufferWriteHanzi(&sig, "不", 0, 52);
-    sig_bufferWriteHString(&sig, "不是他干的是另一个人干的哈哈哈",15, 4, 40);
-
-
+    sig_inst_init(&sig, &ssd1306, spi0, p,  GT21L16S2Y_FONT_1616, 5000);
+    // sig_bufferWriteHanzi(&sig, "不", 0, 52);
+    // sig_bufferWriteHString(&sig, "不是他干的是另一个人干的哈哈哈",15, 4, 40);
+    // sig_bufferWriteAscii(&sig, "b", 64, 48);
+    // sig_bufferWriteAscii(&sig, "B", 76, 48);
+    sig_bufferWriteString(&sig, "这不是他的\n这是woden的，你不该在这里", 0, 0);
+    ssd1306_i2c_flush(&ssd1306);
+    sleep_ms(1000);
+    ssd1306_i2c_bufferClearArea(&ssd1306, 0, 127, 48, 63);
     ssd1306_i2c_flush(&ssd1306);
     return 0;
 }

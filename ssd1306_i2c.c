@@ -128,7 +128,7 @@ void ssd1306_i2c_flush(ssd1306_i2c_inst *inst)
 
 void ssd1306_i2c_setPixel(ssd1306_i2c_inst *inst, int x, int y, bool on)
 {
-    assert(x >= 0 && x < SSD1306_WIDTH && y >= 0 && y < SSD1306_HEIGHT);
+    //assert(x >= 0 && x < SSD1306_WIDTH && y >= 0 && y < SSD1306_HEIGHT);
     if (!(x >= 0 && x < SSD1306_WIDTH && y >= 0 && y < SSD1306_HEIGHT))
     {
         return;
@@ -187,7 +187,7 @@ int ssd1306_i2c_getFontIndex(uint8_t ch)
 
 void ssd1306_i2c_bufferWriteChar(ssd1306_i2c_inst *inst, int16_t x, int16_t y, uint8_t ch)
 {
-    //TODO: Rewrite this function using the new general_byte_bit_copy.
+    // TODO: Rewrite this function using the new general_byte_bit_copy.
     if (x > SSD1306_WIDTH - SSD1306_FONTS_WIDTH || y > SSD1306_HEIGHT - SSD1306_FONTS_HEIGHT)
         return;
     ssd1306_i2c_buf_t *buf = (ssd1306_i2c_buf_t *)(inst->buffer + 1);
@@ -261,7 +261,9 @@ void ssd1306_i2c_invert(ssd1306_i2c_inst *inst, bool inv)
 
 void ssd1306_i2c_invertArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint y_min, uint y_max)
 {
-    //TODO: Rewrite this function using the new general_byte_bit_copy or general_byte_bit_invert_copy.
+    if(x_max >= SSD1306_WIDTH || y_max >= SSD1306_HEIGHT || x_min < x_max || y_min < y_max)
+        return;
+    // TODO: Rewrite this function using the new general_byte_bit_copy or general_byte_bit_invert_copy.
     ssd1306_i2c_buf_t *buf = (ssd1306_i2c_buf_t *)(inst->buffer + 1);
     uint y_ = y_min, x_ = x_min;
     if (y_min / 8 != y_max / 8)
@@ -274,7 +276,6 @@ void ssd1306_i2c_invertArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint
             if (height == 0)
             {
                 y_ += SSD1306_PAGE_HEIGHT;
-
             }
             else
             {
@@ -317,6 +318,8 @@ void ssd1306_i2c_invertArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint
 
 void ssd1306_i2c_invertPageArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint page_min, uint page_max)
 {
+    if(x_max >= SSD1306_WIDTH || page_max >= SSD1306_NUM_PAGES || x_min < x_max || page_min < page_max)
+        return;
     ssd1306_i2c_buf_t *buf = (ssd1306_i2c_buf_t *)(inst->buffer + 1);
 
     for (uint i = page_min; i <= page_max; i++)
@@ -328,7 +331,59 @@ void ssd1306_i2c_invertPageArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, 
     }
 }
 
+void ssd1306_i2c_bufferClear(ssd1306_i2c_inst *inst)
+{
+    memset(inst->buffer + 1, 0, sizeof(inst->buffer) - 1);
+    inst->buffer[0] = 0x40;
+}
 
+void ssd1306_i2c_bufferClearArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint y_min, uint y_max)
+{
+    if(x_max >= SSD1306_WIDTH || y_max >= SSD1306_HEIGHT || x_min < x_max || y_min < y_max)
+        return;
+    uint32_t x = x_min;
+    uint32_t y = y_min;
+    uint32_t page_height = SSD1306_PAGE_HEIGHT;
+    ssd1306_i2c_buf_t *buf = (ssd1306_i2c_buf_t *)(inst->buffer + 1);
+    uint8_t zero = 0;
+    if (y_min / page_height != y_max / page_height)
+    {
+        uint32_t page_y = y / page_height;
+        uint32_t mod_y = y % page_height;
+        while (page_y < y_max / page_height)
+        {
+
+            for (x = x_min; x <= x_max; x++)
+                general_byte_bit_copy(&buf[page_y][x], mod_y, &zero, 0, page_height - mod_y);
+
+            page_y++;
+            mod_y = 0;
+        }
+        for(x = x_min; x <= x_max; x++)
+            general_byte_bit_copy(&buf[page_y][x], 0, &zero, 0, y_max % page_height + 1);
+    }
+    else
+    {
+        uint32_t page_y = y / page_height;
+        for(x = x_min; x <= x_max; x++)
+            general_byte_bit_copy(&buf[page_y][x], y_min % page_height, &zero, 0, y_max - y_min + 1);
+    }
+}
+
+void ssd1306_i2c_bufferClearPageArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint page_min, uint page_max)
+{
+    if(x_max >= SSD1306_WIDTH || page_max >= SSD1306_NUM_PAGES || x_min < x_max || page_min < page_max)
+        return;
+    ssd1306_i2c_buf_t *buf = (ssd1306_i2c_buf_t *)(inst->buffer + 1);
+
+    for (uint i = page_min; i <= page_max; i++)
+    {
+        for (uint j = x_min; j <= x_max; j++)
+        {
+            buf[i][j] = 0;
+        }
+    }
+}
 
 int ssd1306_i2c_area_init(ssd1306_i2c_area *area, int x_min, int x_max, int page_min, int page_max)
 {
@@ -381,9 +436,9 @@ void general_byte_bit_copy(uint8_t *dest, uint d_start, uint8_t *src, uint s_sta
     uint8_t tmp = *src & smask; // only keep destination bit field
     uint8_t dmask_lsb0 = 0xff << d_start;
     uint8_t dmask_msb0 = 0xff >> (size - d_start - length);
-    uint8_t dmask = ~(dmask_lsb0 & dmask_msb0);//destination bit field set to 0
+    uint8_t dmask = ~(dmask_lsb0 & dmask_msb0); // destination bit field set to 0
     *dest &= dmask;
-    if(s_start >= d_start)
+    if (s_start >= d_start)
         *dest |= tmp >> (s_start - d_start);
     else
         *dest |= tmp << (d_start - s_start);
@@ -398,12 +453,12 @@ void general_byte_bit_invert_copy(uint8_t *dest, uint d_start, uint8_t *src, uin
     uint8_t smask_lsb0 = 0xff << s_start;
     uint8_t smask_msb0 = 0xff >> (size - s_start - length);
     uint8_t smask = smask_lsb0 & smask_msb0;
-    uint8_t tmp = (~ *src) & smask; // only keep destination bit field
+    uint8_t tmp = (~*src) & smask; // only keep destination bit field
     uint8_t dmask_lsb0 = 0xff << d_start;
     uint8_t dmask_msb0 = 0xff >> (size - d_start - length);
-    uint8_t dmask = ~(dmask_lsb0 & dmask_msb0);//destination bit field set to 0
+    uint8_t dmask = ~(dmask_lsb0 & dmask_msb0); // destination bit field set to 0
     *dest &= dmask;
-    if(s_start >= d_start)
+    if (s_start >= d_start)
         *dest |= tmp >> (s_start - d_start);
     else
         *dest |= tmp << (d_start - s_start);
