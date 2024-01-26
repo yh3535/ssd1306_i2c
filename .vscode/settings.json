@@ -1,0 +1,26 @@
+{
+  "cmake.configureOnOpen": false,
+  "cmake.statusbar.advanced": {
+    "debug" : {
+      "visibility": "hidden"
+              },
+    "launch" : {
+      "visibility": "hidden"
+               },
+    "build" : {
+      "visibility": "hidden"
+               },
+    "buildTarget" : {
+      "visibility": "hidden"
+               },
+    },
+    "files.associations": {
+      "i2c.h": "c",
+      "spi.h": "c",
+      "ssd1306_i2c_gt21l16s2y.h": "c",
+      "string.h": "c",
+      "ssd1306_i2c.h": "c",
+      "stdlib.h": "c",
+      "stdio.h": "c"
+    },
+}
