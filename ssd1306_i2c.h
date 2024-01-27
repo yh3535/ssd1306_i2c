@@ -95,14 +95,19 @@ void ssd1306_i2c_scroll(ssd1306_i2c_inst *inst, bool on);
 void ssd1306_i2c_flush(ssd1306_i2c_inst *inst);
 void ssd1306_i2c_setPixel(ssd1306_i2c_inst *inst, int x,int y, bool on);
 void ssd1306_i2c_drawLine(ssd1306_i2c_inst *inst, int x0, int y0, int x1, int y1, bool on);
-void ssd1306_i2c_bufferWriteChar(ssd1306_i2c_inst *inst, int16_t x, int16_t y, uint8_t ch);
-void ssd1306_i2c_bufferWriteCString(ssd1306_i2c_inst *inst, int16_t x, int16_t y, const char *str);
-void ssd1306_i2c_invert(ssd1306_i2c_inst *inst, bool inv);
-void ssd1306_i2c_invertArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint y_min, uint y_max);
-void ssd1306_i2c_invertPageArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint page_min, uint page_max);
+int  ssd1306_i2c_getFontIndex(uint8_t ch);
+void ssd1306_i2c_bufferWriteChar(ssd1306_i2c_inst *inst, uint16_t x, uint16_t y, uint8_t ch);
+void ssd1306_i2c_bufferWriteCString(ssd1306_i2c_inst *inst, uint16_t x, uint16_t y, const char *str);
+void ssd1306_i2c_cmdInvert(ssd1306_i2c_inst *inst, bool inv);
+void ssd1306_i2c_bufferInvert(ssd1306_i2c_inst *inst);
+void ssd1306_i2c_bufferInvertArea(ssd1306_i2c_inst *inst, uint16_t x_min, uint16_t x_max, uint16_t y_min, uint16_t y_max);
+void ssd1306_i2c_bufferInvertPageArea(ssd1306_i2c_inst *inst, uint16_t x_min, uint16_t x_max, uint16_t page_min, uint16_t page_max);
 void ssd1306_i2c_bufferClear(ssd1306_i2c_inst *inst);
-void ssd1306_i2c_bufferClearArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint y_min, uint y_max);
-void ssd1306_i2c_bufferClearPageArea(ssd1306_i2c_inst *inst, uint x_min, uint x_max, uint page_min, uint page_max);
+void ssd1306_i2c_bufferClearArea(ssd1306_i2c_inst *inst, uint16_t x_min, uint16_t x_max, uint16_t y_min, uint16_t y_max);
+void ssd1306_i2c_bufferClearPageArea(ssd1306_i2c_inst *inst, uint16_t x_min, uint16_t x_max, uint16_t page_min, uint16_t page_max);
+void ssd1306_i2c_bufferSet(ssd1306_i2c_inst *inst);
+void ssd1306_i2c_bufferSetArea(ssd1306_i2c_inst *inst, uint16_t x_min, uint16_t x_max, uint16_t y_min, uint16_t y_max);
+void ssd1306_i2c_bufferSetPageArea(ssd1306_i2c_inst *inst, uint16_t x_min, uint16_t x_max, uint16_t page_min, uint16_t page_max);
 
 
 int  ssd1306_i2c_area_init(ssd1306_i2c_area *area, int x_min, int x_max, int page_min, int page_max);
@@ -110,6 +115,6 @@ void ssd1306_i2c_area_write(ssd1306_i2c_inst *inst, ssd1306_i2c_area *area);
 void ssd1306_i2c_area_copyData(ssd1306_i2c_area *area, const uint8_t *data, uint size);
 void ssd1306_i2c_area_free(ssd1306_i2c_area *area);
 
-void ssd1306_i2c_generalByteBitCopy(uint8_t *dest, uint d_start, uint8_t *src, uint s_start, uint length);
-void ssd1306_i2c_generalByteBitInvertCopy(uint8_t *dest, uint d_start, uint8_t *src, uint s_start, uint length);
+void ssd1306_i2c_generalByteBitCopy(uint8_t *dest, uint d_start, const uint8_t *src, uint s_start, uint length);
+void ssd1306_i2c_generalByteBitInvertCopy(uint8_t *dest, uint d_start, const uint8_t *src, uint s_start, uint length);
 #endif
