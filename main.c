@@ -122,7 +122,7 @@ int main()
     si_frame f1;
     si_frame_init(&f1, 64,36);
 
-    sig.font = GT21L16S2Y_FONT_1616;
+    //sig.font = GT21L16S2Y_FONT_1616;
     sifg_writeString(&f1,&sig,"²âÊÔtest×Ö·û´®\nhello world",0,0);
     si_frame_drawLine(&f1,0,0,0,f1.height-1,1);
     si_frame_drawLine(&f1,0,0,f1.width-1,0,1);

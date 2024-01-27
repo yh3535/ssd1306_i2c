@@ -155,10 +155,6 @@ void ssd1306_i2c_drawLine(ssd1306_i2c_inst *inst, int x0, int y0, int x1, int y1
     while (true)
     {
 
-        if (y0 == 20)
-        {
-            y0 = y0;
-        }
         ssd1306_i2c_setPixel(inst, x0, y0, on);
         if (x0 == x1 && y0 == y1)
             break;

@@ -45,10 +45,6 @@ void si_frame_drawLine(si_frame *frame, int x0, int y0, int x1, int y1, bool on)
     while (true)
     {
 
-        if (y0 == 20)
-        {
-            y0 = y0;
-        }
         si_frame_setPixel(frame, x0, y0, on);
         if (x0 == x1 && y0 == y1)
             break;
