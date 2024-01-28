@@ -120,25 +120,32 @@ int main()
     ssd1306_i2c_bufferClear(&ssd1306);
     ssd1306_i2c_flush(&ssd1306);
     si_frame f1;
-    si_frame_init(&f1, 64,36);
+    si_frame_init(&f1, 64, 36);
 
-    //sig.font = GT21L16S2Y_FONT_1616;
-    sifg_writeString(&f1,&sig,"²âÊÔtest×Ö·û´®\nhello world",0,0);
-    si_frame_drawLine(&f1,0,0,0,f1.height-1,1);
-    si_frame_drawLine(&f1,0,0,f1.width-1,0,1);
-    si_frame_drawLine(&f1,0,f1.height-1,f1.width-1,f1.height-1,1);
-    si_frame_drawLine(&f1,f1.width-1,0,f1.width-1,f1.height-1,1);
-    ssd1306_i2c_bufferPutFrame(&ssd1306,0,0,&f1);
+    // sig.font = GT21L16S2Y_FONT_1616;
+    char c = -1;
+    int t = c;
+    if (t < 0)
+        sifg_writeString(&f1, &sig, "²âÊÔtest×Ö·û´®\ntruetrue00", 0, 0);
+    else
+        sifg_writeString(&f1, &sig, "²âÊÔtest×Ö·û´®\nfalsefalse00", 0, 0);
+
+    si_frame_drawLine(&f1, 0, 0, 0, f1.height - 1, 1);
+    si_frame_drawLine(&f1, 0, 0, f1.width - 1, 0, 1);
+    si_frame_drawLine(&f1, 0, f1.height - 1, f1.width - 1, f1.height - 1, 1);
+    si_frame_drawLine(&f1, f1.width - 1, 0, f1.width - 1, f1.height - 1, 1);
+    // ssd1306_i2c_bufferPutFrame(&ssd1306, 0, 0, &f1);
     ssd1306_i2c_flush(&ssd1306);
-    for (int x = 0; x < SSD1306_WIDTH - f1.width; x+=4)
+    for (int16_t i = -64; i < 64; i += 8)
     {
-        for (int y = 0; y < SSD1306_HEIGHT - f1.height; y++)
+        for (int16_t j = -35; j < SSD1306_HEIGHT; j++)
         {
             ssd1306_i2c_bufferClear(&ssd1306);
-            ssd1306_i2c_bufferPutFrame(&ssd1306, x, y, &f1);
+            ssd1306_i2c_bufferPutFrame(&ssd1306, i, j, &f1);
             ssd1306_i2c_flush(&ssd1306);
-            sleep_ms(50);
+            sleep_ms(20);
         }
     }
+
     return 0;
 }

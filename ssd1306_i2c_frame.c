@@ -301,13 +301,14 @@ void ssd1306_i2c_directPutFrame(ssd1306_i2c_inst *inst, uint16_t x, uint16_t pag
     i2c_write_blocking(inst->i2c_port, SSD1306_I2C_ADDR, frame->buffer, frame->buffer_size, false);
 }
 
-void ssd1306_i2c_bufferPutFrame(ssd1306_i2c_inst *inst, uint16_t x, uint16_t y, si_frame *frame)
+void ssd1306_i2c_bufferPutFrame(ssd1306_i2c_inst *inst, int16_t x, int16_t y, si_frame *frame)
 {
-    uint16_t x_min = x;
-    uint16_t y_min = y;
-    uint16_t x_max = x + frame->width - 1;
-    uint16_t y_max = y + frame->height - 1;
-
+    int16_t x_min = x;
+    int16_t y_min = y;
+    int16_t x_max = x + frame->width - 1;
+    int16_t y_max = y + frame->height - 1;
+    if (x_max < 0 || y_max < 0 || x_min >= SSD1306_WIDTH || y_min >= SSD1306_HEIGHT)
+        return;
     if (x_max >= SSD1306_WIDTH)
         x_max = SSD1306_WIDTH - 1;
     if (y_max >= SSD1306_HEIGHT)
@@ -316,61 +317,110 @@ void ssd1306_i2c_bufferPutFrame(ssd1306_i2c_inst *inst, uint16_t x, uint16_t y, 
     uint32_t page_height = SSD1306_PAGE_HEIGHT;
     uint8_t *inst_buf = (inst->buffer + 1);
     uint8_t *frame_buf = (frame->buffer + 1);
-    uint32_t f_y = 0, f_x = 0;
-
+    uint16_t f_y = 0, f_x = 0;
+    uint16_t f_y_start = 0, f_x_start = 0;
+    if (x_min < 0)
+    {
+        f_x_start = -x_min;
+        x_min = 0;
+    }
+    if (y_min < 0)
+    {
+        f_y_start = -y_min;
+        y_min = 0;
+    }
     if (y_min / page_height != y_max / page_height)
     {
         uint32_t page_y = y_min / page_height;
         uint32_t mod_y = y_min % page_height;
-        uint32_t fpage_y = 0;
-        for (x = x_min, f_x = 0; x <= x_max; x++, f_x++)
-            ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], mod_y,
-                                           &frame_buf[fpage_y * frame->width + f_x], 0,
-                                           page_height - mod_y);
+        uint32_t fpage_y = f_y_start / page_height;
+        uint32_t fmod_y = f_y_start % page_height;
+        if (page_height - mod_y <= page_height - fmod_y)
+            for (x = x_min, f_x = f_x_start; x <= x_max; x++, f_x++)
+                ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], mod_y,
+                                               &frame_buf[fpage_y * frame->width + f_x], fmod_y,
+                                               page_height - mod_y);
+        else
+        {
+            uint32_t fpy_1 = fpage_y + 1;
+            for (x = x_min, f_x = f_x_start; x <= x_max; x++, f_x++)
+            {
+                ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], mod_y,
+                                               &frame_buf[fpage_y * frame->width + f_x], fmod_y,
+                                               page_height - fmod_y);
+                ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], mod_y + page_height - fmod_y,
+                                               &frame_buf[fpy_1 * frame->width + f_x], 0,
+                                               fmod_y - mod_y);
+            }
+            fpage_y = fpy_1;
+        }
         page_y++;
-
+        int32_t l = fmod_y - mod_y;
+        int32_t ph_add_l = page_height + l;
+        int32_t ph_sub_l = page_height - l;
+        if (ph_add_l > page_height)
+            ph_add_l %= page_height;
+        if (ph_sub_l >= page_height)
+            ph_sub_l %= page_height;
         while (page_y < y_max / page_height)
         {
             uint32_t fpy_1 = fpage_y + 1;
-            for (x = x_min, f_x = 0; x <= x_max; x++, f_x++)
+            for (x = x_min, f_x = f_x_start; x <= x_max; x++, f_x++)
             {
                 ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], 0,
-                                               &frame_buf[fpage_y * frame->width + f_x], page_height - mod_y,
-                                               mod_y);
-                ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], mod_y,
+                                               &frame_buf[fpage_y * frame->width + f_x], ph_add_l,
+                                               ph_sub_l);
+
+                ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], ph_sub_l,
                                                &frame_buf[fpy_1 * frame->width + f_x], 0,
-                                               page_height - mod_y);
+                                               ph_add_l);
             }
 
             page_y++;
             fpage_y++;
         }
-        if (y_max % page_height + 1 <= mod_y)
-            for (x = x_min, f_x = 0; x <= x_max; x++, f_x++)
+        if (y_max % page_height + 1 <= ph_sub_l)
+            for (x = x_min, f_x = f_x_start; x <= x_max; x++, f_x++)
                 ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], 0,
-                                               &frame_buf[fpage_y * frame->width + f_x], page_height - mod_y,
+                                               &frame_buf[fpage_y * frame->width + f_x], ph_add_l,
                                                y_max % page_height + 1);
         else
         {
             uint32_t fpy_1 = fpage_y + 1;
-            for (x = x_min, f_x = 0; x <= x_max; x++, f_x++)
+            for (x = x_min, f_x = f_x_start; x <= x_max; x++, f_x++)
             {
                 ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], 0,
-                                               &frame_buf[fpage_y * frame->width + f_x], page_height - mod_y,
-                                               mod_y);
-                ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], mod_y,
+                                               &frame_buf[fpage_y * frame->width + f_x], ph_add_l,
+                                               ph_sub_l);
+                ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], ph_sub_l,
                                                &frame_buf[fpy_1 * frame->width + f_x], 0,
-                                               y_max % page_height + 1 - mod_y);
+                                               y_max % page_height + 1 - ph_sub_l);
             }
         }
     }
     else
     {
-        uint32_t page_y = y / page_height;
-        for (x = x_min, f_x = 0; x <= x_max; x++, f_x++)
-            ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], y_min % page_height,
-                                           &frame_buf[0 + f_x], 0,
-                                           y_max - y_min + 1);
+        uint32_t page_y = y_min / page_height;
+        uint32_t fmod_y = f_y_start % page_height;
+        uint32_t fpage_y = f_y_start / page_height;
+        if (y_max - y_min + 1 < page_height - fmod_y)
+            for (x = x_min, f_x = f_x_start; x <= x_max; x++, f_x++)
+                ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], y_min % page_height,
+                                               &frame_buf[fpage_y * frame->width + f_x], fmod_y,
+                                               y_max - y_min + 1);
+        else
+        {
+            uint32_t fpy_1 = fpage_y + 1;
+            for (x = x_min, f_x = f_x_start; x <= x_max; x++, f_x++)
+            {
+                ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], y_min % page_height,
+                                               &frame_buf[fpage_y * frame->width + f_x], fmod_y,
+                                               page_height - fmod_y);
+                ssd1306_i2c_generalByteBitCopy(&inst_buf[page_y * SSD1306_WIDTH + x], y_min % page_height + page_height - fmod_y,
+                                               &frame_buf[fpy_1 * frame->width + f_x], 0,
+                                               y_max - y_min + 1 - (page_height - fmod_y));
+            }
+        }
     }
 }
 

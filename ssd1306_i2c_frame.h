@@ -40,7 +40,7 @@ void si_frame_setArea(si_frame *frame, uint16_t x_min, uint16_t x_max, uint16_t 
 void si_frame_setPageArea(si_frame *frame, uint16_t x_min, uint16_t x_max, uint16_t page_min, uint16_t page_max);
 
 void ssd1306_i2c_directPutFrame(ssd1306_i2c_inst *inst, uint16_t x, uint16_t page_y, si_frame *frame);
-void ssd1306_i2c_bufferPutFrame(ssd1306_i2c_inst *inst, uint16_t x, uint16_t page_y, si_frame *frame);
+void ssd1306_i2c_bufferPutFrame(ssd1306_i2c_inst *inst, int16_t x, int16_t page_y, si_frame *frame);
 
 #ifdef _SSD1306_I2C_GT21L16S2Y_H_
 // 若使用了汉字模块，引入相应的对象与函数
