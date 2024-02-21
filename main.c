@@ -30,7 +30,7 @@ int main()
     puts("Hello, world!");
 
     ssd1306_i2c_inst ssd1306;
-    ssd1306_i2c_inst_init(&ssd1306, i2c0, I2C_SCL, I2C_SDA, 400);
+    ssd1306_i2c_inst_init(&ssd1306, i2c0, I2C_SCL, I2C_SDA, 1000);
     ssd1306_i2c_init(&ssd1306);
     // for (int i = 0; i < 3; i++) {
     //     ssd1306_i2c_send_cmd(&ssd1306,SSD1306_SET_ALL_ON);    // ËùÓĞÏñËØµãÁÁ
@@ -136,14 +136,14 @@ int main()
     si_frame_drawLine(&f1, f1.width - 1, 0, f1.width - 1, f1.height - 1, 1);
     // ssd1306_i2c_bufferPutFrame(&ssd1306, 0, 0, &f1);
     ssd1306_i2c_flush(&ssd1306);
-    for (int16_t i = -64; i < 64; i += 8)
+    for (int16_t i = -64; i < 64; i += 1)
     {
         for (int16_t j = -35; j < SSD1306_HEIGHT; j++)
         {
             ssd1306_i2c_bufferClear(&ssd1306);
             ssd1306_i2c_bufferPutFrame(&ssd1306, i, j, &f1);
             ssd1306_i2c_flush(&ssd1306);
-            sleep_ms(20);
+            //sleep_ms(20);
         }
     }
 
