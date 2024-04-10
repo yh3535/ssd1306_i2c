@@ -44,16 +44,7 @@ void ssd1306_i2c_bufferPutFrame(ssd1306_i2c_inst *inst, uint16_t x, uint16_t y, 
 void ssd1306_i2c_immediatePutFrame(ssd1306_i2c_inst *inst, uint16_t x, uint16_t y, si_frame *frame);
 
 #ifdef _SSD1306_I2C_GT21L16S2Y_H_
-// 若使用了汉字模块，引入相应的对象与函数
-// 前缀 sifg_ 代表 ssd1306_i2c_frame_gt21l16s2y_ 。
-// typedef struct _sifg_inst{
-//     si_frame *frame;
-//     spi_inst_t *spi_port;
-//     uint8_t port_index[4];// 0 is CS#, 1 is RX (MISO), 2 is TX (MOSI), 3 is SCLK
-//     uint32_t font;
-// }sifg_inst;
-
-// void sifg_inst_init(sifg_inst *inst, si_frame *frame, sig_inst *sig);
+// If GT21L16S2Y is used, then extern these functions.
 
 void sifg_writeHanzi(si_frame *frame, sig_inst *sig, const char *hanzi, uint16_t x, uint16_t y);
 void sifg_writeHString(si_frame *frame, sig_inst *sig, const char *str, size_t len, uint16_t x, uint16_t y);

@@ -45,24 +45,24 @@ void ssd1306_i2c_send_buf(ssd1306_i2c_inst *inst, uint8_t buf[], int buflen)
 
 void ssd1306_i2c_init(ssd1306_i2c_inst *inst)
 {
-    // 这里部分命令不是必须的，因为默认设置就是这样。但为了说明初始化序列是什么样的，还是都写在这里。
-    // 某些值是硬件制造商推荐的。
+    // This function is almost same as the init function
+    //  in the initial example.
 
     uint8_t cmds[] = {
-        SSD1306_SET_DISP, // 关闭显示
-        /* 内存映射 */
-        SSD1306_SET_MEM_MODE, // 下个字节设置寻址模式： 0 = 水平, 1 = 垂直, 2 = 页
-        0x00,                 // 水平寻址模式
+        SSD1306_SET_DISP, // set display off
+        /* memory mapping */
+        SSD1306_SET_MEM_MODE, // set memory address mode 0 = horizontal, 1 = vertical, 2 = page
+        0x00,                 // horizontal addressing mode
         /* resolution and layout */
-        SSD1306_SET_DISP_START_LINE,    // 设置开始行号为 0
-        SSD1306_SET_SEG_REMAP | 0x01,   // 设置段重映射，列地址127被映射到第0段
-        SSD1306_SET_MUX_RATIO,          // 设置多路复用率
-        SSD1306_HEIGHT - 1,             // 显示屏高度 - 1
-        SSD1306_SET_COM_OUT_DIR | 0x08, // 设置常规输出扫描方向，从下到上，COM[N-1]到COM[0]
-        SSD1306_SET_DISP_OFFSET,        // 下个字节设置显示偏移量
-        0x00,                           // 0偏移
-        SSD1306_SET_COM_PIN_CFG,        // 下个字节设置常规引脚硬件配置，板子指定的magic number。
-                                        // 0x02 用于 128x32, 0x12 可能用于 128x64。 其他选项有 0x22, 0x32
+        SSD1306_SET_DISP_START_LINE,    // set display start line to 0
+        SSD1306_SET_SEG_REMAP | 0x01,   // set segment re-map, column address 127 is mapped to SEG0
+        SSD1306_SET_MUX_RATIO,          // set multiplex ratio
+        SSD1306_HEIGHT - 1,             // Display height - 1
+        SSD1306_SET_COM_OUT_DIR | 0x08, // set COM (common) output scan direction. Scan from bottom up, COM[N-1] to COM0
+        SSD1306_SET_DISP_OFFSET,        // set display offset
+        0x00,                           // no offset
+        SSD1306_SET_COM_PIN_CFG,        // set COM (common) pins hardware configuration. Board specific magic number. 
+                                        // 0x02 Works for 128x32, 0x12 Possibly works for 128x64. Other options 0x22, 0x32
 #if ((SSD1306_WIDTH == 128) && (SSD1306_HEIGHT == 32))
         0x02,
 #elif ((SSD1306_WIDTH == 128) && (SSD1306_HEIGHT == 64))
@@ -70,22 +70,22 @@ void ssd1306_i2c_init(ssd1306_i2c_inst *inst)
 #else
         0x02,
 #endif
-        /* 计时和驱动模式 */
-        SSD1306_SET_DISP_CLK_DIV, // 下个字节设置显示时钟分频系数
-        0x80,                     // 系数为1，标准频率
-        SSD1306_SET_PRECHARGE,    // 设置预充周期
-        0xF1,                     // Vcc 由我们的板子内部产生
-        SSD1306_SET_VCOM_DESEL,   // 下个字节设置高电平最低值
-        0x30,                     // 0.83倍Vcc
+        /* timing and driving scheme */
+        SSD1306_SET_DISP_CLK_DIV,   // set display clock divide ratio
+        0x80,                       // div ratio of 1, standard freq
+        SSD1306_SET_PRECHARGE,      // set pre-charge period
+        0xF1,                       // Vcc internally generated on our board
+        SSD1306_SET_VCOM_DESEL,     // set VCOMH deselect level
+        0x30,                       // 0.83xVcc
         /* display */
-        SSD1306_SET_CONTRAST, // 设置对比度控制
+        SSD1306_SET_CONTRAST,       // set contrast control
         0xFF,
-        SSD1306_SET_ENTIRE_ON,     // 开启整个显示屏，以显示RAM内容
-        SSD1306_SET_NORM_DISP,     // 常规显示而非反转
-        SSD1306_SET_CHARGE_PUMP,   // 设置电源
-        0x14,                      // Vcc 由我们的板子内部产生
-        SSD1306_SET_SCROLL | 0x00, // 取消水平滚动。如果允许滚动，内存写入就会出错。
-        SSD1306_SET_DISP | 0x01,   // 开启显示
+        SSD1306_SET_ENTIRE_ON,      // set entire display on to follow RAM content
+        SSD1306_SET_NORM_DISP,      // set normal (not inverted) display
+        SSD1306_SET_CHARGE_PUMP,    // set charge pump
+        0x14,                       // Vcc internally generated on our board
+        SSD1306_SET_SCROLL | 0x00,  // deactivate horizontal scrolling if set. This is necessary as memory writes will corrupt if scrolling was enabled
+        SSD1306_SET_DISP | 0x01,    // turn display on
     };
 
     ssd1306_i2c_send_cmd_list(inst, cmds, count_of(cmds));
@@ -96,16 +96,16 @@ void ssd1306_i2c_init(ssd1306_i2c_inst *inst)
 
 void ssd1306_i2c_scroll(ssd1306_i2c_inst *inst, bool on)
 {
-    // 配置水平滚动
+    // configure horizontal scrolling
     uint8_t cmds[] = {
         SSD1306_SET_HORIZ_SCROLL | 0x00,
-        0x00,                                // 空字节
-        0x00,                                // 从第0页开始
-        0x00,                                // 时间间隔
-        0x03,                                // 到第3页结束 SSD1306_NUM_PAGES ??
-        0x00,                                // 空字节
-        0xFF,                                // 空字节
-        SSD1306_SET_SCROLL | (on ? 0x01 : 0) // 开始/关闭滚动
+        0x00,                                // dummy byte
+        0x00,                                // start page 0
+        0x00,                                // time interval
+        0x03,                                // end page 3 SSD1306_NUM_PAGES ??
+        0x00,                                // dummy byte
+        0xFF,                                // dummy byte
+        SSD1306_SET_SCROLL | (on ? 0x01 : 0) // Start/stop scrolling
     };
 
     ssd1306_i2c_send_cmd_list(inst, cmds, count_of(cmds));
@@ -137,7 +137,7 @@ void ssd1306_i2c_setPixel(ssd1306_i2c_inst *inst, int x, int y, bool on)
     uint8_t *pbyte = &(buf[y / SSD1306_PAGE_HEIGHT][x]);
 
     if (on)
-        *pbyte |= 1 << (y % SSD1306_PAGE_HEIGHT); // y%SSD1306_PAGE_HEIGHT是一列8个比特中具体哪个比特
+        *pbyte |= 1 << (y % SSD1306_PAGE_HEIGHT); // y%SSD1306_PAGE_HEIGHT is which bit in a byte
     else
         *pbyte &= ~(1 << (y % SSD1306_PAGE_HEIGHT));
 }
