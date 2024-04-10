@@ -374,6 +374,13 @@ void ssd1306_i2c_bufferPutFrame(ssd1306_i2c_inst *inst, uint16_t x, uint16_t y, 
     }
 }
 
+void ssd1306_i2c_immediatePutFrame(ssd1306_i2c_inst *inst, uint16_t x, uint16_t y, si_frame *frame)
+{
+    ssd1306_i2c_inst new_inst = *inst;
+    ssd1306_i2c_bufferPutFrame(&new_inst, x, y, frame);
+    ssd1306_i2c_flush(&new_inst);
+}
+
 #ifdef _SSD1306_I2C_GT21L16S2Y_H_
 
 void sifg_writeHanzi(si_frame *frame, sig_inst *sig, const char *hanzi, uint16_t x, uint16_t y)

@@ -15,11 +15,11 @@ The frame height is n pixels but some page
 */
 typedef struct _si_frame
 {
-    uint16_t width, height;
-    uint16_t page_number;
-    uint8_t *buffer; // The buffer size should be frame_width * page_number + 1
-                     // in which the first byte needs to be 0x40.
-    uint32_t buffer_size;
+  uint16_t width, height;
+  uint16_t page_number;
+  uint8_t *buffer; // The buffer size should be frame_width * page_number + 1
+                   // in which the first byte needs to be 0x40.
+  uint32_t buffer_size;
 
 } si_frame;
 
@@ -40,7 +40,8 @@ void si_frame_setArea(si_frame *frame, uint16_t x_min, uint16_t x_max, uint16_t 
 void si_frame_setPageArea(si_frame *frame, uint16_t x_min, uint16_t x_max, uint16_t page_min, uint16_t page_max);
 
 void ssd1306_i2c_directPutFrame(ssd1306_i2c_inst *inst, uint16_t x, uint16_t page_y, si_frame *frame);
-void ssd1306_i2c_bufferPutFrame(ssd1306_i2c_inst *inst, uint16_t x, uint16_t page_y, si_frame *frame);
+void ssd1306_i2c_bufferPutFrame(ssd1306_i2c_inst *inst, uint16_t x, uint16_t y, si_frame *frame);
+void ssd1306_i2c_immediatePutFrame(ssd1306_i2c_inst *inst, uint16_t x, uint16_t y, si_frame *frame);
 
 #ifdef _SSD1306_I2C_GT21L16S2Y_H_
 // 若使用了汉字模块，引入相应的对象与函数
