@@ -38,7 +38,7 @@ int main()
     //     ssd1306_i2c_send_cmd(&ssd1306,SSD1306_SET_ENTIRE_ON); // »Øµ½RAM×´Ì¬
     //     sleep_ms(500);
     // }
-    ssd1306_i2c_drawLine(&ssd1306, 10, 10, 127, 63, 1);
+    ssd1306_i2c_bufferDrawLine(&ssd1306, 10, 10, 127, 63, 1);
     ssd1306_i2c_bufferWriteChar(&ssd1306, 8, 3, 'z');
     ssd1306_i2c_bufferWriteCString(&ssd1306, 0, 0, "hello world\nthis is a test character output.");
     ssd1306_i2c_flush(&ssd1306);

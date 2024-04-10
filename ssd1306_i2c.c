@@ -126,7 +126,7 @@ void ssd1306_i2c_flush(ssd1306_i2c_inst *inst)
     i2c_write_blocking(inst->i2c_port, SSD1306_I2C_ADDR, inst->buffer, sizeof(inst->buffer), false);
 }
 
-void ssd1306_i2c_setPixel(ssd1306_i2c_inst *inst, int x, int y, bool on)
+void ssd1306_i2c_bufferSetPixel(ssd1306_i2c_inst *inst, int x, int y, bool on)
 {
     //assert(x >= 0 && x < SSD1306_WIDTH && y >= 0 && y < SSD1306_HEIGHT);
     if (!(x >= 0 && x < SSD1306_WIDTH && y >= 0 && y < SSD1306_HEIGHT))
@@ -142,7 +142,7 @@ void ssd1306_i2c_setPixel(ssd1306_i2c_inst *inst, int x, int y, bool on)
         *pbyte &= ~(1 << (y % SSD1306_PAGE_HEIGHT));
 }
 
-void ssd1306_i2c_drawLine(ssd1306_i2c_inst *inst, int x0, int y0, int x1, int y1, bool on)
+void ssd1306_i2c_bufferDrawLine(ssd1306_i2c_inst *inst, int x0, int y0, int x1, int y1, bool on)
 {
 
     int dx = abs(x1 - x0);
@@ -155,7 +155,7 @@ void ssd1306_i2c_drawLine(ssd1306_i2c_inst *inst, int x0, int y0, int x1, int y1
     while (true)
     {
 
-        ssd1306_i2c_setPixel(inst, x0, y0, on);
+        ssd1306_i2c_bufferSetPixel(inst, x0, y0, on);
         if (x0 == x1 && y0 == y1)
             break;
         e2 = 2 * err;
